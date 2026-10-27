@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<script>window.STATIC_MODE=1</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Savdo AI</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#EEF1EC;--card:#FFFFFF;--ink:#1F2D38;--ink-2:#57646F;--ink-3:#8A96A0;--rule:#DCE1D9;--track:rgba(31,45,56,.07);
+  --green:#1E8E5A;--green-bg:#E3F3EC;--red:#C6362A;--red-bg:#FBE8E5;--amber:#B7791F;--amber-bg:rgba(183,121,31,.13);
+  --accent:#2a78d6;--accent-ink:#fff;color-scheme:light}
+:root[data-theme="dark"]{
+  --bg:#141B20;--card:#1D262D;--ink:#E6ECEF;--ink-2:#A6B2BA;--ink-3:#77838C;--rule:#2C3740;--track:rgba(230,236,239,.08);
+  --green:#3DBE82;--green-bg:rgba(61,190,130,.14);--red:#EF6B5E;--red-bg:rgba(239,107,94,.14);--amber:#E0AA3E;
+  --amber-bg:rgba(224,170,62,.14);--accent:#3987e5;--accent-ink:#fff;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:12px 12px calc(28px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 10px}
+.top h1{font-size:20px;font-weight:800;margin:0;letter-spacing:-.01em}
+.top .sub{font-size:12px;color:var(--ink-3)}
+.back{font:inherit;font-size:14px;font-weight:700;border:0;background:none;color:var(--accent);padding:6px 0;cursor:pointer}
+.back[hidden],.bar[hidden]{display:none}
+.more{font:inherit;font-size:13px;font-weight:700;border:0;background:none;color:var(--accent);padding:4px 2px;cursor:pointer}
+.bar{display:flex;gap:8px;align-items:center;margin:0 0 12px;flex-wrap:wrap}
+.chips{display:inline-flex;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:3px}
+.chips button{font:inherit;font-size:13px;font-weight:700;border:0;background:none;color:var(--ink-2);padding:6px 10px;border-radius:7px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:7px 10px;flex:1;min-width:140px}
+select.on{border-color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:14px;margin:0 0 10px}
+h2{font-size:15px;font-weight:750;margin:0 0 10px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.kpi{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px}
+.kpi .l{font-size:12px;font-weight:650;color:var(--ink-2)}
+.kpi .v{font-size:21px;font-weight:800;letter-spacing:-.015em;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .v small{font-size:12px;font-weight:650;color:var(--ink-2);margin-left:3px}
+.kpi .d{font-size:12px;font-weight:700;margin-top:2px}
+.up{color:var(--green)}.down{color:var(--red)}.mute{color:var(--ink-3)}
+.depts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 10px}
+@media (min-width:560px){.depts{grid-template-columns:repeat(3,1fr)}}
+.dept{display:flex;flex-direction:column;gap:4px;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px;cursor:pointer;min-height:92px}
+.dept .ic{font-size:22px;line-height:1}
+.dept .nm{font-size:14px;font-weight:750}
+.dept .st{font-size:12px;color:var(--ink-2)}
+.dept.off{opacity:.55}
+.dept .badge{align-self:flex-start;font-size:11px;font-weight:750;border-radius:6px;padding:1px 7px;background:var(--track);color:var(--ink-2)}
+.dept .badge.r{background:var(--red-bg);color:var(--red)}.dept .badge.y{background:var(--amber-bg);color:var(--amber)}.dept .badge.g{background:var(--green-bg);color:var(--green)}
+.list{list-style:none;margin:0;padding:0}
+.al{display:block;width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--rule);border-radius:10px;padding:9px 11px;margin:0 0 7px;cursor:pointer}
+.al.s3{border-left-color:var(--red)}.al.s2{border-left-color:var(--amber)}.al.s1{border-left-color:var(--green)}
+.al b{display:block;font-size:13px;margin-bottom:2px}
+.al span{font-size:13.5px;color:var(--ink-2)}
+.bars li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:6px 0;cursor:default}
+.bars li.tap{cursor:pointer}
+.bars .nm{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars .val{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.bars .val small{font-weight:500;color:var(--ink-3);margin-left:5px}
+.bars .tr{grid-column:1/-1;height:7px;background:var(--track);border-radius:4px;overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--ink);border-radius:4px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 6px;border-bottom:1px solid var(--rule);text-align:right}
+th{font-size:12px;font-weight:650;color:var(--ink-2)}
+th.l,td.l{text-align:left}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.dot.g{background:var(--green)}.dot.y{background:var(--amber)}.dot.r{background:var(--red)}
+.br{border:1px solid var(--rule);border-radius:12px;padding:11px;margin:0 0 8px;background:var(--card)}
+.br .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.br .h b{font-size:15px}
+.br .m{font-size:12.5px;color:var(--ink-2);margin:3px 0 4px}
+.br .ln{font-size:13px;color:var(--ink-2);margin:3px 0 0}
+.br .act{margin-top:8px;font:inherit;font-size:13px;font-weight:700;border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:9px;padding:6px 10px;cursor:pointer}
+.ev{font-size:13.5px;line-height:1.45;padding:9px 11px;margin:0 0 7px;border-radius:10px;background:var(--red-bg);border-left:4px solid var(--red)}
+.ev.y{background:var(--amber-bg);border-left-color:var(--amber)}
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:4px;margin:0 0 10px}
+.tabs button{flex:1;font:inherit;font-size:13.5px;font-weight:700;border:0;background:none;color:var(--ink-2);padding:8px 6px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--card)}
+.note{font-size:12.5px;color:var(--ink-3);margin:8px 0 0}
+.warn{font-size:13px;background:var(--amber-bg);color:var(--ink);border-radius:10px;padding:9px 11px;margin:0 0 10px}
+.fc{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--accent);border-radius:12px;padding:11px 12px;margin:0 0 10px;font-size:14px}
+.fc b{font-variant-numeric:tabular-nums}
+details{margin:0 0 8px}
+summary{cursor:pointer;font-weight:750;padding:9px 11px;background:var(--card);border:1px solid var(--rule);border-radius:10px;list-style:none}
+summary::-webkit-details-marker{display:none}
+details[open] summary{border-radius:10px 10px 0 0}
+details .in{border:1px solid var(--rule);border-top:0;border-radius:0 0 10px 10px;padding:6px 10px;background:var(--card)}
+.chat{display:flex;flex-direction:column;gap:8px;min-height:40vh;margin:0 0 10px}
+.msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:14.5px;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:var(--card);border:1px solid var(--rule);border-bottom-left-radius:4px}
+.ask{display:flex;gap:8px;position:sticky;bottom:calc(8px + env(safe-area-inset-bottom));background:var(--bg);padding:6px 0}
+.ask input{flex:1;font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:10px 12px}
+.ask button,.qs button{font:inherit;font-weight:700;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);padding:10px 14px;cursor:pointer}
+.qs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.qs button{font-size:13px;background:var(--card);color:var(--ink);border:1px solid var(--rule);padding:7px 10px}
+.load{padding:50px 10px;text-align:center;color:var(--ink-2)}
+.spin{width:28px;height:28px;border:3px solid var(--track);border-top-color:var(--accent);border-radius:50%;margin:0 auto 12px;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+.empty{padding:20px 6px;color:var(--ink-2);text-align:center}
+/* ---- vizual kartochkalar */
+:root{--s1:#2a78d6;--grid:#E6E9E4;--axis:#C9CFC6}
+:root[data-theme="dark"]{--s1:#3987e5;--grid:#2A343C;--axis:#3A4650}
+.vz{position:relative}
+.vz .vh{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:0 0 10px}
+.vz .vh h2{margin:0}
+.vz .vh .vs{font-size:12px;color:var(--ink-3);margin-top:2px}
+.vbtn{flex:none;display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:12px;font-weight:700;color:var(--ink-2);background:var(--bg);border:1px solid var(--rule);border-radius:9px;padding:5px 8px;cursor:pointer}
+.vbtn svg{width:16px;height:16px}
+.vmenu{position:absolute;right:12px;top:46px;z-index:5;width:min(280px,calc(100% - 24px));background:var(--card);border:1px solid var(--rule);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:10px}
+.vmenu[hidden]{display:none}
+.vmenu .t{font-size:12px;font-weight:700;color:var(--ink-3);margin:0 2px 8px}
+.vgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.vgrid button{display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;font-size:11px;font-weight:650;color:var(--ink-2);background:none;border:1px solid transparent;border-radius:10px;padding:8px 2px;cursor:pointer}
+.vgrid button svg{width:24px;height:24px;color:var(--s1)}
+.vgrid button[aria-pressed="true"]{border-color:var(--s1);background:var(--track);color:var(--ink)}
+.plot{min-height:40px;touch-action:pan-y}
+.plot svg text{font-family:inherit}
+.tnum{font-variant-numeric:tabular-nums}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:var(--card);border-radius:9px;padding:7px 10px;font-size:13px;line-height:1.35;max-width:240px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+#tip b{display:block;font-size:15px}
+#tip[hidden]{display:none}
+.hb{list-style:none;margin:0;padding:0}
+.hb li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:7px 0;border-bottom:1px solid var(--grid)}
+.hb li:last-child{border-bottom:0}
+.hb li.tap{cursor:pointer}
+.hb .nm{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .val{font-size:14px;font-weight:700;text-align:right}
+.hb .val small{font-weight:500;color:var(--ink-3);margin-left:6px}
+.hb .tr{grid-column:1/-1;height:8px;background:var(--track);border-radius:4px;overflow:hidden}
+.hb .tr i{display:block;height:100%;background:var(--s1);border-radius:0 4px 4px 0}
+.lg{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.lg li{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:13.5px}
+.lg .sw{width:12px;height:12px;border-radius:3px}
+.lg .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg .v{font-weight:700}
+.lg .p{color:var(--ink-3);min-width:36px;text-align:right}
+.lg li.tap{cursor:pointer}
+.vt{width:100%;font-size:13.5px}
+.vt td.l{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vt tbody tr.tap{cursor:pointer}
+.hl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3);margin-top:8px}
+.hl i{flex:0 0 90px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--track),var(--s1))}
+.kpi .spk{display:block;margin-top:6px}
+.kpi .d .mute{font-weight:600}
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<main class="wrap">
+  <div class="top">
+    <div><button class="back" id="back" hidden>‹ Bo'limlar</button><h1 id="title">Savdo AI</h1><div class="sub" id="sub"></div></div>
+  </div>
+  <div class="bar" id="bar">
+    <div class="chips" role="group" aria-label="Davr">
+      <button data-days="1" aria-pressed="true">Kecha</button><button data-days="7" aria-pressed="false">7 kun</button><button data-days="30" aria-pressed="false">30 kun</button>
+    </div>
+    <select id="branch" aria-label="Filial"></select>
+  </div>
+  <div id="view"><div class="load"><div class="spin"></div>Ma'lumot yuklanmoqda...</div></div>
+</main>
+<script>/*! pako 2.1.0 https://github.com/nodeca/pako @license (MIT AND Zlib) */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).pako={})}(this,(function(e){"use strict";var t=function(e,t,i,n){for(var a=65535&e|0,r=e>>>16&65535|0,o=0;0!==i;){i-=o=i>2e3?2e3:i;do{r=r+(a=a+t[n++]|0)|0}while(--o);a%=65521,r%=65521}return a|r<<16|0},i=new Uint32Array(function(){for(var e,t=[],i=0;i<256;i++){e=i;for(var n=0;n<8;n++)e=1&e?3988292384^e>>>1:e>>>1;t[i]=e}return t}()),n=function(e,t,n,a){var r=i,o=a+n;e^=-1;for(var s=a;s<o;s++)e=e>>>8^r[255&(e^t[s])];return-1^e},a=16209,r=function(e,t){var i,n,r,o,s,l,f,d,h,c,u,w,b,m,k,_,v,g,p,y,x,E,R,A,Z=e.state;i=e.next_in,R=e.input,n=i+(e.avail_in-5),r=e.next_out,A=e.output,o=r-(t-e.avail_out),s=r+(e.avail_out-257),l=Z.dmax,f=Z.wsize,d=Z.whave,h=Z.wnext,c=Z.window,u=Z.hold,w=Z.bits,b=Z.lencode,m=Z.distcode,k=(1<<Z.lenbits)-1,_=(1<<Z.distbits)-1;e:do{w<15&&(u+=R[i++]<<w,w+=8,u+=R[i++]<<w,w+=8),v=b[u&k];t:for(;;){if(u>>>=g=v>>>24,w-=g,0===(g=v>>>16&255))A[r++]=65535&v;else{if(!(16&g)){if(0==(64&g)){v=b[(65535&v)+(u&(1<<g)-1)];continue t}if(32&g){Z.mode=16191;break e}e.msg="invalid literal/length code",Z.mode=a;break e}p=65535&v,(g&=15)&&(w<g&&(u+=R[i++]<<w,w+=8),p+=u&(1<<g)-1,u>>>=g,w-=g),w<15&&(u+=R[i++]<<w,w+=8,u+=R[i++]<<w,w+=8),v=m[u&_];i:for(;;){if(u>>>=g=v>>>24,w-=g,!(16&(g=v>>>16&255))){if(0==(64&g)){v=m[(65535&v)+(u&(1<<g)-1)];continue i}e.msg="invalid distance code",Z.mode=a;break e}if(y=65535&v,w<(g&=15)&&(u+=R[i++]<<w,(w+=8)<g&&(u+=R[i++]<<w,w+=8)),(y+=u&(1<<g)-1)>l){e.msg="invalid distance too far back",Z.mode=a;break e}if(u>>>=g,w-=g,y>(g=r-o)){if((g=y-g)>d&&Z.sane){e.msg="invalid distance too far back",Z.mode=a;break e}if(x=0,E=c,0===h){if(x+=f-g,g<p){p-=g;do{A[r++]=c[x++]}while(--g);x=r-y,E=A}}else if(h<g){if(x+=f+h-g,(g-=h)<p){p-=g;do{A[r++]=c[x++]}while(--g);if(x=0,h<p){p-=g=h;do{A[r++]=c[x++]}while(--g);x=r-y,E=A}}}else if(x+=h-g,g<p){p-=g;do{A[r++]=c[x++]}while(--g);x=r-y,E=A}for(;p>2;)A[r++]=E[x++],A[r++]=E[x++],A[r++]=E[x++],p-=3;p&&(A[r++]=E[x++],p>1&&(A[r++]=E[x++]))}else{x=r-y;do{A[r++]=A[x++],A[r++]=A[x++],A[r++]=A[x++],p-=3}while(p>2);p&&(A[r++]=A[x++],p>1&&(A[r++]=A[x++]))}break}}break}}while(i<n&&r<s);i-=p=w>>3,u&=(1<<(w-=p<<3))-1,e.next_in=i,e.next_out=r,e.avail_in=i<n?n-i+5:5-(i-n),e.avail_out=r<s?s-r+257:257-(r-s),Z.hold=u,Z.bits=w},o=15,s=new Uint16Array([3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258,0,0]),l=new Uint8Array([16,16,16,16,16,16,16,16,17,17,17,17,18,18,18,18,19,19,19,19,20,20,20,20,21,21,21,21,16,72,78]),f=new Uint16Array([1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577,0,0]),d=new Uint8Array([16,16,16,16,17,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,26,26,27,27,28,28,29,29,64,64]),h=function(e,t,i,n,a,r,h,c){var u,w,b,m,k,_,v,g,p,y=c.bits,x=0,E=0,R=0,A=0,Z=0,S=0,T=0,O=0,U=0,D=0,I=null,B=new Uint16Array(16),N=new Uint16Array(16),C=null;for(x=0;x<=o;x++)B[x]=0;for(E=0;E<n;E++)B[t[i+E]]++;for(Z=y,A=o;A>=1&&0===B[A];A--);if(Z>A&&(Z=A),0===A)return a[r++]=20971520,a[r++]=20971520,c.bits=1,0;for(R=1;R<A&&0===B[R];R++);for(Z<R&&(Z=R),O=1,x=1;x<=o;x++)if(O<<=1,(O-=B[x])<0)return-1;if(O>0&&(0===e||1!==A))return-1;for(N[1]=0,x=1;x<o;x++)N[x+1]=N[x]+B[x];for(E=0;E<n;E++)0!==t[i+E]&&(h[N[t[i+E]]++]=E);if(0===e?(I=C=h,_=20):1===e?(I=s,C=l,_=257):(I=f,C=d,_=0),D=0,E=0,x=R,k=r,S=Z,T=0,b=-1,m=(U=1<<Z)-1,1===e&&U>852||2===e&&U>592)return 1;for(;;){v=x-T,h[E]+1<_?(g=0,p=h[E]):h[E]>=_?(g=C[h[E]-_],p=I[h[E]-_]):(g=96,p=0),u=1<<x-T,R=w=1<<S;do{a[k+(D>>T)+(w-=u)]=v<<24|g<<16|p|0}while(0!==w);for(u=1<<x-1;D&u;)u>>=1;if(0!==u?(D&=u-1,D+=u):D=0,E++,0==--B[x]){if(x===A)break;x=t[i+h[E]]}if(x>Z&&(D&m)!==b){for(0===T&&(T=Z),k+=R,O=1<<(S=x-T);S+T<A&&!((O-=B[S+T])<=0);)S++,O<<=1;if(U+=1<<S,1===e&&U>852||2===e&&U>592)return 1;a[b=D&m]=Z<<24|S<<16|k-r|0}}return 0!==D&&(a[k+D]=x-T<<24|64<<16|0),c.bits=Z,0},c={Z_NO_FLUSH:0,Z_PARTIAL_FLUSH:1,Z_SYNC_FLUSH:2,Z_FULL_FLUSH:3,Z_FINISH:4,Z_BLOCK:5,Z_TREES:6,Z_OK:0,Z_STREAM_END:1,Z_NEED_DICT:2,Z_ERRNO:-1,Z_STREAM_ERROR:-2,Z_DATA_ERROR:-3,Z_MEM_ERROR:-4,Z_BUF_ERROR:-5,Z_NO_COMPRESSION:0,Z_BEST_SPEED:1,Z_BEST_COMPRESSION:9,Z_DEFAULT_COMPRESSION:-1,Z_FILTERED:1,Z_HUFFMAN_ONLY:2,Z_RLE:3,Z_FIXED:4,Z_DEFAULT_STRATEGY:0,Z_BINARY:0,Z_TEXT:1,Z_UNKNOWN:2,Z_DEFLATED:8},u=c.Z_FINISH,w=c.Z_BLOCK,b=c.Z_TREES,m=c.Z_OK,k=c.Z_STREAM_END,_=c.Z_NEED_DICT,v=c.Z_STREAM_ERROR,g=c.Z_DATA_ERROR,p=c.Z_MEM_ERROR,y=c.Z_BUF_ERROR,x=c.Z_DEFLATED,E=16180,R=16190,A=16191,Z=16192,S=16194,T=16199,O=16200,U=16206,D=16209,I=function(e){return(e>>>24&255)+(e>>>8&65280)+((65280&e)<<8)+((255&e)<<24)};function B(){this.strm=null,this.mode=0,this.last=!1,this.wrap=0,this.havedict=!1,this.flags=0,this.dmax=0,this.check=0,this.total=0,this.head=null,this.wbits=0,this.wsize=0,this.whave=0,this.wnext=0,this.window=null,this.hold=0,this.bits=0,this.length=0,this.offset=0,this.extra=0,this.lencode=null,this.distcode=null,this.lenbits=0,this.distbits=0,this.ncode=0,this.nlen=0,this.ndist=0,this.have=0,this.next=null,this.lens=new Uint16Array(320),this.work=new Uint16Array(288),this.lendyn=null,this.distdyn=null,this.sane=0,this.back=0,this.was=0}var N,C,z=function(e){if(!e)return 1;var t=e.state;return!t||t.strm!==e||t.mode<E||t.mode>16211?1:0},F=function(e){if(z(e))return v;var t=e.state;return e.total_in=e.total_out=t.total=0,e.msg="",t.wrap&&(e.adler=1&t.wrap),t.mode=E,t.last=0,t.havedict=0,t.flags=-1,t.dmax=32768,t.head=null,t.hold=0,t.bits=0,t.lencode=t.lendyn=new Int32Array(852),t.distcode=t.distdyn=new Int32Array(592),t.sane=1,t.back=-1,m},L=function(e){if(z(e))return v;var t=e.state;return t.wsize=0,t.whave=0,t.wnext=0,F(e)},M=function(e,t){var i;if(z(e))return v;var n=e.state;return t<0?(i=0,t=-t):(i=5+(t>>4),t<48&&(t&=15)),t&&(t<8||t>15)?v:(null!==n.window&&n.wbits!==t&&(n.window=null),n.wrap=i,n.wbits=t,L(e))},H=function(e,t){if(!e)return v;var i=new B;e.state=i,i.strm=e,i.window=null,i.mode=E;var n=M(e,t);return n!==m&&(e.state=null),n},j=!0,K=function(e){if(j){N=new Int32Array(512),C=new Int32Array(32);for(var t=0;t<144;)e.lens[t++]=8;for(;t<256;)e.lens[t++]=9;for(;t<280;)e.lens[t++]=7;for(;t<288;)e.lens[t++]=8;for(h(1,e.lens,0,288,N,0,e.work,{bits:9}),t=0;t<32;)e.lens[t++]=5;h(2,e.lens,0,32,C,0,e.work,{bits:5}),j=!1}e.lencode=N,e.lenbits=9,e.distcode=C,e.distbits=5},P=function(e,t,i,n){var a,r=e.state;return null===r.window&&(r.wsize=1<<r.wbits,r.wnext=0,r.whave=0,r.window=new Uint8Array(r.wsize)),n>=r.wsize?(r.window.set(t.subarray(i-r.wsize,i),0),r.wnext=0,r.whave=r.wsize):((a=r.wsize-r.wnext)>n&&(a=n),r.window.set(t.subarray(i-n,i-n+a),r.wnext),(n-=a)?(r.window.set(t.subarray(i-n,i),0),r.wnext=n,r.whave=r.wsize):(r.wnext+=a,r.wnext===r.wsize&&(r.wnext=0),r.whave<r.wsize&&(r.whave+=a))),0},Y={inflateReset:L,inflateReset2:M,inflateResetKeep:F,inflateInit:function(e){return H(e,15)},inflateInit2:H,inflate:function(e,i){var a,o,s,l,f,d,c,B,N,C,F,L,M,H,j,Y,G,X,W,q,J,Q,V,$,ee=0,te=new Uint8Array(4),ie=new Uint8Array([16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15]);if(z(e)||!e.output||!e.input&&0!==e.avail_in)return v;(a=e.state).mode===A&&(a.mode=Z),f=e.next_out,s=e.output,c=e.avail_out,l=e.next_in,o=e.input,d=e.avail_in,B=a.hold,N=a.bits,C=d,F=c,Q=m;e:for(;;)switch(a.mode){case E:if(0===a.wrap){a.mode=Z;break}for(;N<16;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(2&a.wrap&&35615===B){0===a.wbits&&(a.wbits=15),a.check=0,te[0]=255&B,te[1]=B>>>8&255,a.check=n(a.check,te,2,0),B=0,N=0,a.mode=16181;break}if(a.head&&(a.head.done=!1),!(1&a.wrap)||(((255&B)<<8)+(B>>8))%31){e.msg="incorrect header check",a.mode=D;break}if((15&B)!==x){e.msg="unknown compression method",a.mode=D;break}if(N-=4,J=8+(15&(B>>>=4)),0===a.wbits&&(a.wbits=J),J>15||J>a.wbits){e.msg="invalid window size",a.mode=D;break}a.dmax=1<<a.wbits,a.flags=0,e.adler=a.check=1,a.mode=512&B?16189:A,B=0,N=0;break;case 16181:for(;N<16;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(a.flags=B,(255&a.flags)!==x){e.msg="unknown compression method",a.mode=D;break}if(57344&a.flags){e.msg="unknown header flags set",a.mode=D;break}a.head&&(a.head.text=B>>8&1),512&a.flags&&4&a.wrap&&(te[0]=255&B,te[1]=B>>>8&255,a.check=n(a.check,te,2,0)),B=0,N=0,a.mode=16182;case 16182:for(;N<32;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.head&&(a.head.time=B),512&a.flags&&4&a.wrap&&(te[0]=255&B,te[1]=B>>>8&255,te[2]=B>>>16&255,te[3]=B>>>24&255,a.check=n(a.check,te,4,0)),B=0,N=0,a.mode=16183;case 16183:for(;N<16;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.head&&(a.head.xflags=255&B,a.head.os=B>>8),512&a.flags&&4&a.wrap&&(te[0]=255&B,te[1]=B>>>8&255,a.check=n(a.check,te,2,0)),B=0,N=0,a.mode=16184;case 16184:if(1024&a.flags){for(;N<16;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.length=B,a.head&&(a.head.extra_len=B),512&a.flags&&4&a.wrap&&(te[0]=255&B,te[1]=B>>>8&255,a.check=n(a.check,te,2,0)),B=0,N=0}else a.head&&(a.head.extra=null);a.mode=16185;case 16185:if(1024&a.flags&&((L=a.length)>d&&(L=d),L&&(a.head&&(J=a.head.extra_len-a.length,a.head.extra||(a.head.extra=new Uint8Array(a.head.extra_len)),a.head.extra.set(o.subarray(l,l+L),J)),512&a.flags&&4&a.wrap&&(a.check=n(a.check,o,L,l)),d-=L,l+=L,a.length-=L),a.length))break e;a.length=0,a.mode=16186;case 16186:if(2048&a.flags){if(0===d)break e;L=0;do{J=o[l+L++],a.head&&J&&a.length<65536&&(a.head.name+=String.fromCharCode(J))}while(J&&L<d);if(512&a.flags&&4&a.wrap&&(a.check=n(a.check,o,L,l)),d-=L,l+=L,J)break e}else a.head&&(a.head.name=null);a.length=0,a.mode=16187;case 16187:if(4096&a.flags){if(0===d)break e;L=0;do{J=o[l+L++],a.head&&J&&a.length<65536&&(a.head.comment+=String.fromCharCode(J))}while(J&&L<d);if(512&a.flags&&4&a.wrap&&(a.check=n(a.check,o,L,l)),d-=L,l+=L,J)break e}else a.head&&(a.head.comment=null);a.mode=16188;case 16188:if(512&a.flags){for(;N<16;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(4&a.wrap&&B!==(65535&a.check)){e.msg="header crc mismatch",a.mode=D;break}B=0,N=0}a.head&&(a.head.hcrc=a.flags>>9&1,a.head.done=!0),e.adler=a.check=0,a.mode=A;break;case 16189:for(;N<32;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}e.adler=a.check=I(B),B=0,N=0,a.mode=R;case R:if(0===a.havedict)return e.next_out=f,e.avail_out=c,e.next_in=l,e.avail_in=d,a.hold=B,a.bits=N,_;e.adler=a.check=1,a.mode=A;case A:if(i===w||i===b)break e;case Z:if(a.last){B>>>=7&N,N-=7&N,a.mode=U;break}for(;N<3;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}switch(a.last=1&B,N-=1,3&(B>>>=1)){case 0:a.mode=16193;break;case 1:if(K(a),a.mode=T,i===b){B>>>=2,N-=2;break e}break;case 2:a.mode=16196;break;case 3:e.msg="invalid block type",a.mode=D}B>>>=2,N-=2;break;case 16193:for(B>>>=7&N,N-=7&N;N<32;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if((65535&B)!=(B>>>16^65535)){e.msg="invalid stored block lengths",a.mode=D;break}if(a.length=65535&B,B=0,N=0,a.mode=S,i===b)break e;case S:a.mode=16195;case 16195:if(L=a.length){if(L>d&&(L=d),L>c&&(L=c),0===L)break e;s.set(o.subarray(l,l+L),f),d-=L,l+=L,c-=L,f+=L,a.length-=L;break}a.mode=A;break;case 16196:for(;N<14;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(a.nlen=257+(31&B),B>>>=5,N-=5,a.ndist=1+(31&B),B>>>=5,N-=5,a.ncode=4+(15&B),B>>>=4,N-=4,a.nlen>286||a.ndist>30){e.msg="too many length or distance symbols",a.mode=D;break}a.have=0,a.mode=16197;case 16197:for(;a.have<a.ncode;){for(;N<3;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.lens[ie[a.have++]]=7&B,B>>>=3,N-=3}for(;a.have<19;)a.lens[ie[a.have++]]=0;if(a.lencode=a.lendyn,a.lenbits=7,V={bits:a.lenbits},Q=h(0,a.lens,0,19,a.lencode,0,a.work,V),a.lenbits=V.bits,Q){e.msg="invalid code lengths set",a.mode=D;break}a.have=0,a.mode=16198;case 16198:for(;a.have<a.nlen+a.ndist;){for(;Y=(ee=a.lencode[B&(1<<a.lenbits)-1])>>>16&255,G=65535&ee,!((j=ee>>>24)<=N);){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(G<16)B>>>=j,N-=j,a.lens[a.have++]=G;else{if(16===G){for($=j+2;N<$;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(B>>>=j,N-=j,0===a.have){e.msg="invalid bit length repeat",a.mode=D;break}J=a.lens[a.have-1],L=3+(3&B),B>>>=2,N-=2}else if(17===G){for($=j+3;N<$;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}N-=j,J=0,L=3+(7&(B>>>=j)),B>>>=3,N-=3}else{for($=j+7;N<$;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}N-=j,J=0,L=11+(127&(B>>>=j)),B>>>=7,N-=7}if(a.have+L>a.nlen+a.ndist){e.msg="invalid bit length repeat",a.mode=D;break}for(;L--;)a.lens[a.have++]=J}}if(a.mode===D)break;if(0===a.lens[256]){e.msg="invalid code -- missing end-of-block",a.mode=D;break}if(a.lenbits=9,V={bits:a.lenbits},Q=h(1,a.lens,0,a.nlen,a.lencode,0,a.work,V),a.lenbits=V.bits,Q){e.msg="invalid literal/lengths set",a.mode=D;break}if(a.distbits=6,a.distcode=a.distdyn,V={bits:a.distbits},Q=h(2,a.lens,a.nlen,a.ndist,a.distcode,0,a.work,V),a.distbits=V.bits,Q){e.msg="invalid distances set",a.mode=D;break}if(a.mode=T,i===b)break e;case T:a.mode=O;case O:if(d>=6&&c>=258){e.next_out=f,e.avail_out=c,e.next_in=l,e.avail_in=d,a.hold=B,a.bits=N,r(e,F),f=e.next_out,s=e.output,c=e.avail_out,l=e.next_in,o=e.input,d=e.avail_in,B=a.hold,N=a.bits,a.mode===A&&(a.back=-1);break}for(a.back=0;Y=(ee=a.lencode[B&(1<<a.lenbits)-1])>>>16&255,G=65535&ee,!((j=ee>>>24)<=N);){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(Y&&0==(240&Y)){for(X=j,W=Y,q=G;Y=(ee=a.lencode[q+((B&(1<<X+W)-1)>>X)])>>>16&255,G=65535&ee,!(X+(j=ee>>>24)<=N);){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}B>>>=X,N-=X,a.back+=X}if(B>>>=j,N-=j,a.back+=j,a.length=G,0===Y){a.mode=16205;break}if(32&Y){a.back=-1,a.mode=A;break}if(64&Y){e.msg="invalid literal/length code",a.mode=D;break}a.extra=15&Y,a.mode=16201;case 16201:if(a.extra){for($=a.extra;N<$;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.length+=B&(1<<a.extra)-1,B>>>=a.extra,N-=a.extra,a.back+=a.extra}a.was=a.length,a.mode=16202;case 16202:for(;Y=(ee=a.distcode[B&(1<<a.distbits)-1])>>>16&255,G=65535&ee,!((j=ee>>>24)<=N);){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(0==(240&Y)){for(X=j,W=Y,q=G;Y=(ee=a.distcode[q+((B&(1<<X+W)-1)>>X)])>>>16&255,G=65535&ee,!(X+(j=ee>>>24)<=N);){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}B>>>=X,N-=X,a.back+=X}if(B>>>=j,N-=j,a.back+=j,64&Y){e.msg="invalid distance code",a.mode=D;break}a.offset=G,a.extra=15&Y,a.mode=16203;case 16203:if(a.extra){for($=a.extra;N<$;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}a.offset+=B&(1<<a.extra)-1,B>>>=a.extra,N-=a.extra,a.back+=a.extra}if(a.offset>a.dmax){e.msg="invalid distance too far back",a.mode=D;break}a.mode=16204;case 16204:if(0===c)break e;if(L=F-c,a.offset>L){if((L=a.offset-L)>a.whave&&a.sane){e.msg="invalid distance too far back",a.mode=D;break}L>a.wnext?(L-=a.wnext,M=a.wsize-L):M=a.wnext-L,L>a.length&&(L=a.length),H=a.window}else H=s,M=f-a.offset,L=a.length;L>c&&(L=c),c-=L,a.length-=L;do{s[f++]=H[M++]}while(--L);0===a.length&&(a.mode=O);break;case 16205:if(0===c)break e;s[f++]=a.length,c--,a.mode=O;break;case U:if(a.wrap){for(;N<32;){if(0===d)break e;d--,B|=o[l++]<<N,N+=8}if(F-=c,e.total_out+=F,a.total+=F,4&a.wrap&&F&&(e.adler=a.check=a.flags?n(a.check,s,F,f-F):t(a.check,s,F,f-F)),F=c,4&a.wrap&&(a.flags?B:I(B))!==a.check){e.msg="incorrect data check",a.mode=D;break}B=0,N=0}a.mode=16207;case 16207:if(a.wrap&&a.flags){for(;N<32;){if(0===d)break e;d--,B+=o[l++]<<N,N+=8}if(4&a.wrap&&B!==(4294967295&a.total)){e.msg="incorrect length check",a.mode=D;break}B=0,N=0}a.mode=16208;case 16208:Q=k;break e;case D:Q=g;break e;case 16210:return p;default:return v}return e.next_out=f,e.avail_out=c,e.next_in=l,e.avail_in=d,a.hold=B,a.bits=N,(a.wsize||F!==e.avail_out&&a.mode<D&&(a.mode<U||i!==u))&&P(e,e.output,e.next_out,F-e.avail_out),C-=e.avail_in,F-=e.avail_out,e.total_in+=C,e.total_out+=F,a.total+=F,4&a.wrap&&F&&(e.adler=a.check=a.flags?n(a.check,s,F,e.next_out-F):t(a.check,s,F,e.next_out-F)),e.data_type=a.bits+(a.last?64:0)+(a.mode===A?128:0)+(a.mode===T||a.mode===S?256:0),(0===C&&0===F||i===u)&&Q===m&&(Q=y),Q},inflateEnd:function(e){if(z(e))return v;var t=e.state;return t.window&&(t.window=null),e.state=null,m},inflateGetHeader:function(e,t){if(z(e))return v;var i=e.state;return 0==(2&i.wrap)?v:(i.head=t,t.done=!1,m)},inflateSetDictionary:function(e,i){var n,a=i.length;return z(e)||0!==(n=e.state).wrap&&n.mode!==R?v:n.mode===R&&t(1,i,a,0)!==n.check?g:P(e,i,a,a)?(n.mode=16210,p):(n.havedict=1,m)},inflateInfo:"pako inflate (from Nodeca project)"};function G(e){return G="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},G(e)}var X=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},W=function(e){for(var t=Array.prototype.slice.call(arguments,1);t.length;){var i=t.shift();if(i){if("object"!==G(i))throw new TypeError(i+"must be non-object");for(var n in i)X(i,n)&&(e[n]=i[n])}}return e},q=function(e){for(var t=0,i=0,n=e.length;i<n;i++)t+=e[i].length;for(var a=new Uint8Array(t),r=0,o=0,s=e.length;r<s;r++){var l=e[r];a.set(l,o),o+=l.length}return a},J=!0;try{String.fromCharCode.apply(null,new Uint8Array(1))}catch(e){J=!1}for(var Q=new Uint8Array(256),V=0;V<256;V++)Q[V]=V>=252?6:V>=248?5:V>=240?4:V>=224?3:V>=192?2:1;Q[254]=Q[254]=1;var $=function(e){if("function"==typeof TextEncoder&&TextEncoder.prototype.encode)return(new TextEncoder).encode(e);var t,i,n,a,r,o=e.length,s=0;for(a=0;a<o;a++)55296==(64512&(i=e.charCodeAt(a)))&&a+1<o&&56320==(64512&(n=e.charCodeAt(a+1)))&&(i=65536+(i-55296<<10)+(n-56320),a++),s+=i<128?1:i<2048?2:i<65536?3:4;for(t=new Uint8Array(s),r=0,a=0;r<s;a++)55296==(64512&(i=e.charCodeAt(a)))&&a+1<o&&56320==(64512&(n=e.charCodeAt(a+1)))&&(i=65536+(i-55296<<10)+(n-56320),a++),i<128?t[r++]=i:i<2048?(t[r++]=192|i>>>6,t[r++]=128|63&i):i<65536?(t[r++]=224|i>>>12,t[r++]=128|i>>>6&63,t[r++]=128|63&i):(t[r++]=240|i>>>18,t[r++]=128|i>>>12&63,t[r++]=128|i>>>6&63,t[r++]=128|63&i);return t},ee=function(e,t){var i,n,a=t||e.length;if("function"==typeof TextDecoder&&TextDecoder.prototype.decode)return(new TextDecoder).decode(e.subarray(0,t));var r=new Array(2*a);for(n=0,i=0;i<a;){var o=e[i++];if(o<128)r[n++]=o;else{var s=Q[o];if(s>4)r[n++]=65533,i+=s-1;else{for(o&=2===s?31:3===s?15:7;s>1&&i<a;)o=o<<6|63&e[i++],s--;s>1?r[n++]=65533:o<65536?r[n++]=o:(o-=65536,r[n++]=55296|o>>10&1023,r[n++]=56320|1023&o)}}}return function(e,t){if(t<65534&&e.subarray&&J)return String.fromCharCode.apply(null,e.length===t?e:e.subarray(0,t));for(var i="",n=0;n<t;n++)i+=String.fromCharCode(e[n]);return i}(r,n)},te=function(e,t){(t=t||e.length)>e.length&&(t=e.length);for(var i=t-1;i>=0&&128==(192&e[i]);)i--;return i<0||0===i?t:i+Q[e[i]]>t?i:t},ie={2:"need dictionary",1:"stream end",0:"","-1":"file error","-2":"stream error","-3":"data error","-4":"insufficient memory","-5":"buffer error","-6":"incompatible version"};var ne=function(){this.input=null,this.next_in=0,this.avail_in=0,this.total_in=0,this.output=null,this.next_out=0,this.avail_out=0,this.total_out=0,this.msg="",this.state=null,this.data_type=2,this.adler=0};var ae=function(){this.text=0,this.time=0,this.xflags=0,this.os=0,this.extra=null,this.extra_len=0,this.name="",this.comment="",this.hcrc=0,this.done=!1},re=Object.prototype.toString,oe=c.Z_NO_FLUSH,se=c.Z_FINISH,le=c.Z_OK,fe=c.Z_STREAM_END,de=c.Z_NEED_DICT,he=c.Z_STREAM_ERROR,ce=c.Z_DATA_ERROR,ue=c.Z_MEM_ERROR;function we(e){this.options=W({chunkSize:65536,windowBits:15,to:""},e||{});var t=this.options;t.raw&&t.windowBits>=0&&t.windowBits<16&&(t.windowBits=-t.windowBits,0===t.windowBits&&(t.windowBits=-15)),!(t.windowBits>=0&&t.windowBits<16)||e&&e.windowBits||(t.windowBits+=32),t.windowBits>15&&t.windowBits<48&&0==(15&t.windowBits)&&(t.windowBits|=15),this.err=0,this.msg="",this.ended=!1,this.chunks=[],this.strm=new ne,this.strm.avail_out=0;var i=Y.inflateInit2(this.strm,t.windowBits);if(i!==le)throw new Error(ie[i]);if(this.header=new ae,Y.inflateGetHeader(this.strm,this.header),t.dictionary&&("string"==typeof t.dictionary?t.dictionary=$(t.dictionary):"[object ArrayBuffer]"===re.call(t.dictionary)&&(t.dictionary=new Uint8Array(t.dictionary)),t.raw&&(i=Y.inflateSetDictionary(this.strm,t.dictionary))!==le))throw new Error(ie[i])}function be(e,t){var i=new we(t);if(i.push(e),i.err)throw i.msg||ie[i.err];return i.result}we.prototype.push=function(e,t){var i,n,a,r=this.strm,o=this.options.chunkSize,s=this.options.dictionary;if(this.ended)return!1;for(n=t===~~t?t:!0===t?se:oe,"[object ArrayBuffer]"===re.call(e)?r.input=new Uint8Array(e):r.input=e,r.next_in=0,r.avail_in=r.input.length;;){for(0===r.avail_out&&(r.output=new Uint8Array(o),r.next_out=0,r.avail_out=o),(i=Y.inflate(r,n))===de&&s&&((i=Y.inflateSetDictionary(r,s))===le?i=Y.inflate(r,n):i===ce&&(i=de));r.avail_in>0&&i===fe&&r.state.wrap>0&&0!==e[r.next_in];)Y.inflateReset(r),i=Y.inflate(r,n);switch(i){case he:case ce:case de:case ue:return this.onEnd(i),this.ended=!0,!1}if(a=r.avail_out,r.next_out&&(0===r.avail_out||i===fe))if("string"===this.options.to){var l=te(r.output,r.next_out),f=r.next_out-l,d=ee(r.output,l);r.next_out=f,r.avail_out=o-f,f&&r.output.set(r.output.subarray(l,l+f),0),this.onData(d)}else this.onData(r.output.length===r.next_out?r.output:r.output.subarray(0,r.next_out));if(i!==le||0!==a){if(i===fe)return i=Y.inflateEnd(this.strm),this.onEnd(i),this.ended=!0,!0;if(0===r.avail_in)break}}return!0},we.prototype.onData=function(e){this.chunks.push(e)},we.prototype.onEnd=function(e){e===le&&("string"===this.options.to?this.result=this.chunks.join(""):this.result=q(this.chunks)),this.chunks=[],this.err=e,this.msg=this.strm.msg};var me=we,ke=be,_e=function(e,t){return(t=t||{}).raw=!0,be(e,t)},ve=be,ge=c,pe={Inflate:me,inflate:ke,inflateRaw:_e,ungzip:ve,constants:ge};e.Inflate=me,e.constants=ge,e.default=pe,e.inflate=ke,e.inflateRaw=_e,e.ungzip=ve,Object.defineProperty(e,"__esModule",{value:!0})}));
+</script>
+<script>
+const TG = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData ? Telegram.WebApp : null;
+const INIT = (TG && TG.initData) || new URLSearchParams(location.hash.slice(1)).get("tgWebAppData") || "";
+const S = {days: 1, branch: "", page: "home", sub: null, tab: 0, chat: []};
+const $ = id => document.getElementById(id), NB = " ";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const som = v => Math.round(v || 0).toLocaleString("ru-RU").replace(/\s/g, NB);
+const mln = v => (v / 1e6).toFixed(1).replace(".", ",") + NB + "mln";
+const pc = x => x == null ? "" : `<span class="${x >= 0 ? "up" : "down"}">${x >= 0 ? "▲" : "▼"} ${Math.abs(Math.round(x * 100))}%</span>`;
+const lvl = l => l === "🔴" ? "r" : l === "🟡" ? "y" : "g";
+let D = null;
+
+if (TG) {
+  TG.ready(); TG.expand();
+  document.documentElement.dataset.theme = TG.colorScheme === "dark" ? "dark" : "light";
+  TG.onEvent("themeChanged", () => document.documentElement.dataset.theme = TG.colorScheme === "dark" ? "dark" : "light");
+  TG.BackButton.onClick(() => go("home"));
+} else if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+
+// ---------- statik rejim (GitHub Pages): ma'lumot shifrlangan fayllardan, parol bilan ochiladi
+const STATIC = !!window.STATIC_MODE;
+let SKEY = null, SVER = null, SAT = "", BUND = {};
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64e = u => btoa(String.fromCharCode(...new Uint8Array(u)));
+async function sFetch(path) {
+  const r = await fetch(path + "?v=" + SVER, {cache: "no-store"});
+  if (!r.ok) throw new Error("Ma'lumot fayli topilmadi (" + r.status + "). Bot hali ma'lumot yuklamagan bo'lishi mumkin.");
+  return new Uint8Array(await r.arrayBuffer());
+}
+async function gunzip(u8) {
+  if ("DecompressionStream" in window) return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer());
+  return window.pako.ungzip(u8);   // eski Safari/Telegram: ichki kutubxona
+}
+async function sDec(buf) {
+  const pt = await crypto.subtle.decrypt({name: "AES-GCM", iv: buf.slice(0, 12)}, SKEY, buf.slice(12));
+  return gunzip(new Uint8Array(pt));
+}
+function cGet(k) { return new Promise(res => { try { if (TG && TG.CloudStorage && TG.isVersionAtLeast("6.9")) { const t = setTimeout(() => res(null), 1200); TG.CloudStorage.getItem(k, (e, v) => { clearTimeout(t); res(e ? null : v || null); }); return; } } catch (e) {} try { res(localStorage.getItem("s_" + k)); } catch (e) { res(null); } }); }
+function cSet(k, v) { try { if (TG && TG.CloudStorage && TG.isVersionAtLeast("6.9")) TG.CloudStorage.setItem(k, v); } catch (e) {} try { localStorage.setItem("s_" + k, v); } catch (e) {} }
+async function sTryKey(raw, chk) {   // false — parol noto'g'ri; boshqa xato — yuqoriga
+  SKEY = await crypto.subtle.importKey("raw", b64d(raw), "AES-GCM", false, ["decrypt"]);
+  let pt;
+  try { pt = await crypto.subtle.decrypt({name: "AES-GCM", iv: chk.slice(0, 12)}, SKEY, chk.slice(12)); }
+  catch (e) { SKEY = null; return false; }
+  await gunzip(new Uint8Array(pt));
+  return true;
+}
+async function sBoot() {
+  $("view").innerHTML = `<div class="load"><div class="spin"></div>Ma'lumot yuklanmoqda...</div>`;
+  let v;
+  try { const r = await fetch("v.json?t=" + Date.now(), {cache: "no-store"}); if (!r.ok) throw 0; v = await r.json(); }
+  catch (e) { $("view").innerHTML = `<div class="card empty">📂 Ilova hali ma'lumot olmagan. Bot yangi 1C faylini qayta ishlagach, shu yerda paydo bo'ladi.</div>`; return; }
+  SVER = v.v; SAT = v.at; const chk = b64d(v.chk), tag = v.salt + ":" + v.iter;
+  const saved = await cGet("akey");
+  try { if (saved && saved.startsWith(tag + "|") && await sTryKey(saved.slice(tag.length + 1), chk)) return load(); } catch (e) {}
+  $("bar").hidden = true;
+  $("view").innerHTML = `<form class="card" id="lockf" style="max-width:380px;margin:30px auto;text-align:center">
+    <div style="font-size:34px">🔒</div><h2 style="margin:8px 0 6px">Ilova parol bilan himoyalangan</h2>
+    <p class="note" style="margin:0 0 14px">Parolni bir marta kiritasiz — Telegram eslab qoladi.</p>
+    <input id="pw" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Parol" style="width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:12px;padding:12px">
+    <button style="width:100%;margin-top:10px;font:inherit;font-weight:750;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);padding:12px;cursor:pointer">Kirish</button>
+    <p id="pwerr" class="note" style="color:var(--red);min-height:1.2em"></p></form>`;
+  $("lockf").onsubmit = async e => {
+    e.preventDefault(); $("pwerr").textContent = "Tekshirilmoqda...";
+    try {
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode($("pw").value.trim()), "PBKDF2", false, ["deriveKey"]);
+      const k = await crypto.subtle.deriveKey({name: "PBKDF2", salt: b64d(v.salt), iterations: v.iter, hash: "SHA-256"}, base, {name: "AES-GCM", length: 256}, true, ["decrypt"]);
+      const raw = b64e(await crypto.subtle.exportKey("raw", k));
+      if (!await sTryKey(raw, chk)) { $("pwerr").textContent = "Parol noto'g'ri"; return; }
+      cSet("akey", tag + "|" + raw); $("bar").hidden = false; load();
+    } catch (err) { $("pwerr").textContent = "Xato: " + err.message; }
+  };
+}
+async function staticApi(path, body) {
+  if (path === "/api/data") {
+    const d = body.days;
+    if (!BUND[d]) BUND[d] = JSON.parse(new TextDecoder().decode(await sDec(await sFetch("d/" + d + ".bin"))));
+    return BUND[d][body.branch || ""] || {empty: true, meta: BUND[d][""].meta};
+  }
+  if (path === "/api/ask") return {answer: "AI yordamchi hozircha o'chiq."};
+  throw new Error("not found");
+}
+async function api(path, body) {
+  if (STATIC) return staticApi(path, body);
+  const r = await fetch(path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({initData: INIT, ...body})});
+  const j = await r.json().catch(() => ({error: "Server javob bermadi"}));
+  if (!r.ok) throw new Error(j.error || ("Xato " + r.status));
+  return j;
+}
+async function load() {
+  $("view").innerHTML = `<div class="load"><div class="spin"></div>Ma'lumot yuklanmoqda...</div>`;
+  try {
+    const j = await api("/api/data", {days: S.days, branch: S.branch});
+    if (!j.meta) { $("view").innerHTML = `<div class="card empty">📂 ${esc(j.error || "Hali ma'lumot yo'q")}<br><br>Botga 1C Excel faylini tashlang, keyin ilovani qayta oching.</div>`; return; }
+    D = j; render(); }
+  catch (e) { $("view").innerHTML = `<div class="card empty">⚠️ ${esc(e.message)}</div>`; }
+}
+const DEPTS = [
+  {id: "sales", icon: "💰", name: "Savdo", st: d => mln(d.home.rev) + " so'm"},
+  {id: "branches", icon: "🏪", name: "Filiallar", st: d => d.branches.length + " ta filial", badge: d => { const n = d.branches.filter(b => b.sev >= 2).length; return n ? [n + " diqqat", n > 3 ? "r" : "y"] : ["joyida", "g"]; }},
+  {id: "kassa", icon: "🛡", name: "Kassa xavfsizligi", st: d => d.home.kassa_n + " shubhali holat", badge: d => d.home.kassa_n ? [mln(d.home.kassa_sum), "r"] : ["toza", "g"]},
+  {id: "supply", icon: "📦", name: "Ta'minot / Zaxira", st: d => "Ertaga: " + d.meta.next.split(",")[0]},
+  {id: "analytics", icon: "📈", name: "Analitika va prognoz", st: d => "Ertaga ≈ " + mln(d.home.fc)},
+  {id: "dash", icon: "📊", name: "To'liq dashboard", st: () => "Barcha grafiklar va filtrlar"},
+  {id: "ai", icon: "🤖", name: "AI yordamchi", st: () => "Savol bering"},
+];
+function go(page, sub) {
+  S.page = page; S.sub = sub ?? null; S.tab = 0; window.scrollTo(0, 0); render();
+  if (TG) page === "home" ? TG.BackButton.hide() : TG.BackButton.show();
+}
+function header() {
+  const d = DEPTS.find(x => x.id === S.page) || D.planned.find(x => x.id === S.page);
+  $("title").textContent = S.page === "home" ? "Savdo AI" : (d ? d.icon + " " + d.name : "");
+  $("back").hidden = S.page === "home" || !!TG;
+  const per = {1: "kecha", 7: "7 kun", 30: "30 kun"}[S.days];
+  $("sub").textContent = S.page === "dash" ? "Ichidagi filtrlar bilan" : `${D.meta.asof} · ${per}${S.branch ? " · " + S.branch : " · hamma filiallar"}`;
+  $("bar").hidden = S.page === "ai" || S.page === "dash" || (D.planned || []).some(p => p.id === S.page);
+  document.querySelectorAll("[data-days]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.days === S.days)));
+  $("branch").innerHTML = `<option value="">Hamma filiallar</option>` + D.meta.branches.map(b => `<option${b === S.branch ? " selected" : ""}>${esc(b)}</option>`).join("");
+  $("branch").classList.toggle("on", !!S.branch);
+}
+function line(pts) {
+  if (!pts.length) return `<p class="empty">Ma'lumot yo'q</p>`;
+  const W = 420, h = 170, pl = 22, pr = 22, pt = 22, pb = 22, n = pts.length, max = Math.max(...pts.map(p => p.v), 1);
+  const X = i => n === 1 ? W / 2 : pl + i * (W - pl - pr) / (n - 1), Y = v => pt + (1 - Math.max(v, 0) / max) * (h - pt - pb);
+  let s = `<svg viewBox="0 0 ${W} ${h}" role="img"><line x1="${pl}" x2="${W - pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--rule)"/>`;
+  if (n > 1) s += `<path d="M${X(0)},${Y(0)} ${pts.map((p, i) => `L${X(i)},${Y(p.v)}`).join(" ")} L${X(n - 1)},${Y(0)} Z" fill="var(--track)"/>`;
+  for (let i = 0; i < n - 1; i++) s += `<line x1="${X(i)}" y1="${Y(pts[i].v)}" x2="${X(i + 1)}" y2="${Y(pts[i + 1].v)}" stroke="var(${pts[i + 1].v >= pts[i].v ? "--green" : "--red"})" stroke-width="3" stroke-linecap="round"/>`;
+  const step = Math.ceil(n / 6);
+  pts.forEach((p, i) => {
+    s += `<circle cx="${X(i)}" cy="${Y(p.v)}" r="3.5" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/>`;
+    if (n <= 7 || i % step === 0 || i === n - 1) s += `<text x="${X(i)}" y="${Y(p.v) - 9}" text-anchor="middle" font-size="12" font-weight="800" fill="var(--ink)" stroke="var(--card)" stroke-width="3.5" paint-order="stroke">${(p.v / 1e6).toFixed(1).replace(".", ",")}</text>`
+        + `<text x="${X(i)}" y="${h - 4}" text-anchor="middle" font-size="10.5" fill="var(--ink-2)">${esc(p.label)}</text>`;
+  });
+  return s + "</svg>";
+}
+function bars(items, onTap) {
+  if (!items.length) return `<p class="empty">Ma'lumot yo'q</p>`;
+  const max = Math.max(...items.map(x => x.v), 1), tot = items.reduce((a, x) => a + Math.max(x.v, 0), 0);
+  return `<ul class="list bars">${items.map((x, i) => `<li class="${onTap ? "tap" : ""}" data-i="${i}"><span class="nm">${x.dot ? `<span class="dot ${x.dot}"></span>` : ""}${esc(x.name)}</span>
+    <span class="val">${x.fmt || som(x.v)}<small>${x.small ?? (tot ? Math.round(x.v / tot * 100) + "%" : "")}</small></span><span class="tr"><i style="width:${Math.max(x.v, 0) / max * 100}%"></i></span></li>`).join("")}</ul>`;
+}
+function bindTap(el, items, onTap) { el.querySelectorAll("li[data-i]").forEach(li => li.onclick = () => onTap(items[+li.dataset.i])); }
+const kpi = (l, v, u, d) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div><div class="d">${d || "&nbsp;"}</div></div>`;
+
+// ================================================================== VIZUALLAR
+// Har kartochkaning burchagida «Ko'rinish» tugmasi: foydalanuvchi o'ziga qulay turini tanlaydi,
+// tanlov Telegram bulutida (CloudStorage) saqlanadi — telefon ham, kompyuter ham bir xil ko'radi.
+const VT = {
+  line:   {n: "Chiziq", i: '<path d="M3 16l5-6 4 3 7-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'},
+  area:   {n: "Maydon", i: '<path d="M3 18l5-7 4 3 7-8v12z" fill="currentColor" opacity=".3"/><path d="M3 18l5-7 4 3 7-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'},
+  column: {n: "Ustun", i: '<g fill="currentColor"><rect x="3" y="11" width="4" height="8" rx="1"/><rect x="9" y="5" width="4" height="14" rx="1"/><rect x="15" y="9" width="4" height="10" rx="1"/></g>'},
+  bar:    {n: "Yotiq ustun", i: '<g fill="currentColor"><rect x="3" y="3" width="16" height="4" rx="1"/><rect x="3" y="9" width="11" height="4" rx="1"/><rect x="3" y="15" width="7" height="4" rx="1"/></g>'},
+  donut:  {n: "Halqa", i: '<circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="26 15"/><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="4" stroke-dasharray="14 27" stroke-dashoffset="-27"/>'},
+  tree:   {n: "Treemap", i: '<g fill="currentColor"><rect x="3" y="3" width="9" height="16" rx="1.5"/><rect x="13" y="3" width="6" height="9" rx="1.5" opacity=".6"/><rect x="13" y="13" width="6" height="6" rx="1.5" opacity=".35"/></g>'},
+  heat:   {n: "Issiqlik", i: '<g fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1" opacity=".25"/><rect x="9" y="3" width="5" height="5" rx="1"/><rect x="15" y="3" width="4" height="5" rx="1" opacity=".55"/><rect x="3" y="9" width="5" height="5" rx="1" opacity=".7"/><rect x="9" y="9" width="5" height="5" rx="1" opacity=".4"/><rect x="15" y="9" width="4" height="5" rx="1"/><rect x="3" y="15" width="5" height="4" rx="1"/><rect x="9" y="15" width="5" height="4" rx="1" opacity=".3"/><rect x="15" y="15" width="4" height="4" rx="1" opacity=".6"/></g>'},
+  table:  {n: "Jadval", i: '<g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="16" height="14" rx="2"/><path d="M3 9h16M3 13.5h16M9 4v14"/></g>'},
+};
+const ico = (t, s = 22) => `<svg viewBox="0 0 22 22" width="${s}" height="${s}" aria-hidden="true">${VT[t].i}</svg>`;
+const CAT = {light: ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"],
+             dark:  ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#008300", "#9085e9", "#e66767"]};
+const OTHER = {light: "#A7ADA5", dark: "#5A656D"};
+const theme = () => document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+const fmtC = v => { const a = Math.abs(v); return a >= 1e9 ? (v / 1e9).toFixed(1).replace(".", ",") + NB + "mlrd" : a >= 1e6 ? (v / 1e6).toFixed(a >= 1e8 ? 0 : 1).replace(".", ",") + NB + "mln" : a >= 1e3 ? Math.round(v / 1e3) + NB + "ming" : String(Math.round(v)); };
+
+let PREF = {v: {}, col: {}};
+function prefLoad() {
+  return new Promise(res => {
+    const done = raw => { try { const j = JSON.parse(raw || "{}"); PREF = {v: j.v || {}, col: j.col || {}}; } catch (e) {} res(); };
+    try {
+      if (TG && TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast("6.9")) {
+        const t = setTimeout(() => done(localGet()), 1200);
+        TG.CloudStorage.getItem("viz", (err, v) => { clearTimeout(t); done(err ? localGet() : v || localGet()); });
+        return;
+      }
+    } catch (e) {}
+    done(localGet());
+  });
+}
+function localGet() { try { return localStorage.getItem("savdoViz"); } catch (e) { return null; } }
+function prefSave() {
+  const raw = JSON.stringify(PREF);
+  try { localStorage.setItem("savdoViz", raw); } catch (e) {}
+  try { if (TG && TG.CloudStorage && TG.isVersionAtLeast("6.9")) TG.CloudStorage.setItem("viz", raw.slice(0, 4000)); } catch (e) {}
+}
+// rang — mavjudlikka bog'liq (filtr o'zgarsa ham «Marinad» doim bir xil rangda)
+function colorOf(dim, name) {
+  const m = PREF.col[dim] || (PREF.col[dim] = {});
+  if (!(name in m)) { const used = Object.values(m); if (used.length >= 8) return OTHER[theme()]; m[name] = used.length; prefSave(); }
+  return CAT[theme()][m[name]];
+}
+const lum = hex => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, n >> 8 & 255, n & 255].map(x => (x /= 255) <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+
+// ---------- tooltip
+function tipShow(ev, html) {
+  const t = $("tip"); t.innerHTML = html; t.hidden = false;
+  const x = ev.clientX, y = ev.clientY, w = t.offsetWidth, h = t.offsetHeight;
+  t.style.left = Math.max(8, Math.min(innerWidth - w - 8, x - w / 2)) + "px";
+  t.style.top = (y - h - 14 < 8 ? y + 18 : y - h - 14) + "px";
+}
+function tipHide() { $("tip").hidden = true; document.querySelectorAll(".xh").forEach(l => l.setAttribute("opacity", 0)); }
+document.addEventListener("pointerdown", e => { if (!e.target.closest("[data-i]")) tipHide(); });
+addEventListener("scroll", tipHide, {passive: true});
+
+// ---------- ro'yxatga olish va chizish
+const VIZ = {};
+function viz(c) {   // c: {id, title, sub, kind:"time"|"cat"|"heat", types, def, data, unit, dim, onPick, tip}
+  VIZ[c.id] = c;
+  const t = c.types.includes(PREF.v[c.id]) ? PREF.v[c.id] : c.def;
+  return `<section class="card vz" id="vz-${c.id}"><div class="vh"><div><h2>${esc(c.title)}</h2>${c.sub ? `<div class="vs">${esc(c.sub)}</div>` : ""}</div>
+    <button class="vbtn" type="button" data-vm="${c.id}" aria-label="Ko'rinishni tanlash">${ico(t, 16)}Ko'rinish</button></div>
+    <div class="vmenu" id="vm-${c.id}" hidden><div class="t">Vizual turini tanlang</div><div class="vgrid">${c.types.map(x =>
+      `<button type="button" data-vt="${x}" data-id="${c.id}" aria-pressed="${x === t}">${ico(x)}${VT[x].n}</button>`).join("")}</div></div>
+    <div class="plot" id="pl-${c.id}"></div>${c.note ? `<p class="note">${c.note}</p>` : ""}</section>`;
+}
+function mountViz() {
+  Object.keys(VIZ).forEach(id => { if ($("pl-" + id)) draw(id); else delete VIZ[id]; });
+  document.querySelectorAll("[data-vm]").forEach(b => b.onclick = e => {
+    e.stopPropagation(); const m = $("vm-" + b.dataset.vm), open = m.hidden;
+    document.querySelectorAll(".vmenu").forEach(x => x.hidden = true); m.hidden = !open;
+  });
+  document.querySelectorAll("[data-vt]").forEach(b => b.onclick = () => {
+    const id = b.dataset.id, t = b.dataset.vt; PREF.v[id] = t; prefSave();
+    $("vm-" + id).hidden = true;
+    $("vm-" + id).querySelectorAll("[data-vt]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.vt === t)));
+    document.querySelector(`[data-vm="${id}"]`).innerHTML = ico(t, 16) + "Ko'rinish";
+    draw(id); if (TG && TG.HapticFeedback) TG.HapticFeedback.selectionChanged();
+  });
+}
+document.addEventListener("click", e => { if (!e.target.closest(".vmenu,[data-vm]")) document.querySelectorAll(".vmenu").forEach(x => x.hidden = true); });
+let _rw = 0;
+addEventListener("resize", () => { if (Math.abs(innerWidth - _rw) > 20) { _rw = innerWidth; Object.keys(VIZ).forEach(id => $("pl-" + id) && draw(id)); } });
+
+function draw(id) {
+  const c = VIZ[id], el = $("pl-" + id), t = c.types.includes(PREF.v[id]) ? PREF.v[id] : c.def;
+  if (!c.data.length) { el.innerHTML = `<p class="empty">Ma'lumot yo'q</p>`; return; }
+  const w = Math.max(el.clientWidth, 260);
+  el.innerHTML = t === "table" ? vTable(c) : t === "bar" ? vBar(c) : t === "donut" ? vDonut(c, w) : t === "tree" ? vTree(c, w)
+    : t === "heat" ? vHeat(c, w) : vTime(c, t, w);
+  const tipOf = i => c.tip ? c.tip(c.data[i]) : `<b>${som(c.data[i].v)}${NB}${c.unit || "so'm"}</b>${esc(c.data[i].full || c.data[i].k)}`;
+  el.querySelectorAll("[data-i]").forEach(m => {
+    const i = +m.dataset.i, show = ev => {
+      tipShow(ev, tipOf(i));
+      const xh = el.querySelector(".xh"); if (xh && m.dataset.x) { xh.setAttribute("x1", m.dataset.x); xh.setAttribute("x2", m.dataset.x); xh.setAttribute("opacity", 1); }
+    };
+    m.addEventListener("pointerenter", show); m.addEventListener("pointermove", show);
+    m.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") tipHide(); });
+    if (c.onPick && c.kind !== "heat") m.addEventListener("click", () => { tipHide(); c.onPick(c.data[i]); });
+  });
+}
+
+// ---------- o'qlar
+function niceStep(v) { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.log10(v)), f = v / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+function niceMax(v) { const st = niceStep(Math.max(v, 1) / 4); return Math.ceil(Math.max(v, 1) / st) * st; }
+function axisY(W, pl, pr, pt, ph, max) {
+  let s = ""; const st = niceStep(max / 4), n = Math.round(max / st);
+  for (let k = 0; k <= n; k++) {
+    const v = max * k / n, y = pt + ph - ph * k / n;
+    s += `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="var(${k ? "--grid" : "--axis"})" stroke-width="1"/>`
+      + `<text x="${pl - 6}" y="${y + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)" class="tnum">${k ? fmtC(v).replace(NB + "mln", "M").replace(NB + "ming", "K").replace(NB + "mlrd", "B").replace(",0", "") : 0}</text>`;
+  }
+  return s;
+}
+
+// ---------- vaqt: chiziq / maydon / ustun
+function vTime(c, t, W) {
+  const d = c.data, n = d.length, h = 210, pl = 40, pr = 14, pt = 22, pb = 28, ph = h - pt - pb, pw = W - pl - pr;
+  const max = niceMax(Math.max(...d.map(x => x.v), 1)), Y = v => pt + ph - Math.max(v, 0) / max * ph;
+  const col = t === "column", band = pw / n, X = i => col ? pl + band * (i + .5) : (n === 1 ? pl + pw / 2 : pl + i * pw / (n - 1));
+  const maxI = d.reduce((m, x, i) => x.v > d[m].v ? i : m, 0), last = n - 1;
+  let s = `<svg width="${W}" height="${h}" viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(c.title)}">` + axisY(W, pl, pr, pt, ph, max);
+  if (col) {
+    const bw = Math.min(24, band * .62), r = Math.min(4, bw / 2);
+    d.forEach((x, i) => {
+      const x0 = X(i) - bw / 2, y = Y(x.v), y0 = pt + ph;
+      if (y0 - y > .5) s += `<path d="M${x0},${y0}V${y + r}Q${x0},${y} ${x0 + r},${y}H${x0 + bw - r}Q${x0 + bw},${y} ${x0 + bw},${y + r}V${y0}Z" fill="var(--s1)" ${i === maxI || n <= 1 ? "" : 'fill-opacity=".85"'}/>`;
+    });
+  } else {
+    const pts = d.map((x, i) => `${X(i).toFixed(1)},${Y(x.v).toFixed(1)}`);
+    if (t === "area" && n > 1) s += `<path d="M${X(0)},${pt + ph}L${pts.join("L")}L${X(last)},${pt + ph}Z" fill="var(--s1)" fill-opacity=".12"/>`;
+    if (n > 1) s += `<polyline points="${pts.join(" ")}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    [...new Set([maxI, last])].forEach(i => s += `<circle cx="${X(i)}" cy="${Y(d[i].v)}" r="4.5" fill="var(--s1)" stroke="var(--card)" stroke-width="2"/>`);
+  }
+  // tanlab yozilgan qiymatlar: eng yuqori va oxirgi (ustunda — kam bo'lsa hammasi)
+  const lab = col && band >= 58 ? d.map((x, i) => i) : [...new Set([maxI, last])], placed = [];
+  lab.forEach(i => { const lx = Math.min(Math.max(X(i), pl + 18), W - pr - 18), ly = Y(d[i].v) - 9;
+    if (placed.some(q => Math.abs(q[0] - lx) < 56 && Math.abs(q[1] - ly) < 16)) return; placed.push([lx, ly]);
+    s += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="12" font-weight="750" fill="var(--ink)" stroke="var(--card)" stroke-width="3" paint-order="stroke">${fmtC(d[i].v)}</text>`; });
+  const every = Math.max(1, Math.ceil(n / Math.max(1, Math.floor(pw / 46))));
+  const room = Math.max(3, Math.floor((col ? band : pw / Math.max(n - 1, 1)) * every / 6.6)), cut = t => t.length > room ? t.slice(0, room - 1) + "…" : t;
+  d.forEach((x, i) => { if (i % every === 0 || i === last && (last % every) > every / 2) s += `<text x="${X(i)}" y="${h - 8}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${esc(cut(x.k))}</text>`; });
+  s += `<line class="xh" x1="0" x2="0" y1="${pt}" y2="${pt + ph}" stroke="var(--ink-3)" stroke-width="1" opacity="0"/>`;
+  d.forEach((x, i) => { const bx = col ? pl + band * i : X(i) - (n > 1 ? pw / (n - 1) / 2 : pw / 2); s += `<rect data-i="${i}" ${col ? "" : `data-x="${X(i)}"`} x="${Math.max(bx, 0)}" y="${pt - 10}" width="${col ? band : n > 1 ? pw / (n - 1) : pw}" height="${ph + 10}" fill="transparent"/>`; });
+  return s + "</svg>";
+}
+
+// ---------- toifa: yotiq ustun / halqa / treemap / jadval
+function vBar(c) {
+  const d = c.data, max = Math.max(...d.map(x => x.v), 1), tot = d.reduce((a, x) => a + Math.max(x.v, 0), 0);
+  return `<ul class="hb">${d.map((x, i) => `<li data-i="${i}" class="${c.onPick ? "tap" : ""}"><span class="nm">${x.dot ? `<span class="dot ${x.dot}"></span>` : ""}${esc(x.k)}</span>
+    <span class="val">${x.fmt || fmtC(x.v)}<small>${x.small ?? (tot ? Math.round(x.v / tot * 100) + "%" : "")}</small></span>
+    <span class="tr"><i style="width:${Math.max(x.v, 0) / max * 100}%"></i></span></li>`).join("")}</ul>`;
+}
+function fold(d, k) {   // eng kattalari + «Boshqa»
+  const s = d.slice().sort((a, b) => b.v - a.v);
+  if (s.length <= k + 1) return s;
+  return s.slice(0, k).concat([{k: "Qolganlar", full: `Qolganlar (${s.length - k} ta)`, v: s.slice(k).reduce((a, x) => a + x.v, 0), other: true}]);
+}
+function vDonut(c, W) {
+  const d = fold(c.data.filter(x => x.v > 0), 5), tot = d.reduce((a, x) => a + x.v, 0), S = Math.min(200, W * .6), R = S / 2, r = R * .62;
+  let a0 = -Math.PI / 2, s = `<svg width="${W}" height="${S}" viewBox="${-(W - S) / 2} 0 ${W} ${S}" role="img" aria-label="${esc(c.title)}">`;
+  d.forEach((x, i) => {
+    const a1 = a0 + x.v / tot * Math.PI * 2, big = a1 - a0 > Math.PI ? 1 : 0, P = (rr, a) => `${R + rr * Math.cos(a)},${R + rr * Math.sin(a)}`;
+    const col = x.other ? OTHER[theme()] : colorOf(c.dim, x.k);
+    s += d.length === 1 ? `<circle cx="${R}" cy="${R}" r="${(R + r) / 2}" fill="none" stroke="${col}" stroke-width="${R - r}"/>`
+      : `<path data-i="${c.data.indexOf(x) >= 0 ? c.data.indexOf(x) : 0}" d="M${P(R, a0)}A${R},${R} 0 ${big} 1 ${P(R, a1)}L${P(r, a1)}A${r},${r} 0 ${big} 0 ${P(r, a0)}Z" fill="${col}" stroke="var(--card)" stroke-width="2"/>`;
+    x._c = col; a0 = a1;
+  });
+  s += `<text x="${R}" y="${R - 2}" text-anchor="middle" font-size="18" font-weight="800" fill="var(--ink)">${fmtC(tot)}</text><text x="${R}" y="${R + 16}" text-anchor="middle" font-size="11.5" fill="var(--ink-3)">jami${c.unit ? "" : ", so'm"}</text></svg>`;
+  return s + `<ul class="lg">${d.map(x => `<li${!x.other && c.onPick ? ` class="tap" data-i="${c.data.indexOf(x)}"` : ""}><span class="sw" style="background:${x._c}"></span><span class="nm">${esc(x.full || x.k)}</span><span class="v">${fmtC(x.v)}</span><span class="p">${Math.round(x.v / tot * 100)}%</span></li>`).join("")}</ul>`;
+}
+function vTree(c, W) {
+  const d = fold(c.data.filter(x => x.v > 0), 7), tot = d.reduce((a, x) => a + x.v, 0), H = 230, out = [];
+  const A = d.map(x => ({q: x, a: x.v / tot * W * H}));
+  const worst = (row, side) => { const sm = row.reduce((t, r) => t + r.a, 0), mx = Math.max(...row.map(r => r.a)), mn = Math.min(...row.map(r => r.a));
+    return Math.max(side * side * mx / (sm * sm), sm * sm / (side * side * mn)); };
+  (function sq(items, x, y, w, h) {   // squarified treemap
+    if (!items.length || w < 1 || h < 1) return;
+    const side = Math.min(w, h); let row = [items[0]], k = 1;
+    while (k < items.length && worst(row.concat(items[k]), side) <= worst(row, side)) row.push(items[k++]);
+    const sm = row.reduce((t, r) => t + r.a, 0), th = sm / side; let off = 0;
+    row.forEach(r => { const len = r.a / th;
+      if (w >= h) out.push({q: r.q, x, y: y + off, w: th, h: len}); else out.push({q: r.q, x: x + off, y, w: len, h: th}); off += len; });
+    if (w >= h) sq(items.slice(k), x + th, y, w - th, h); else sq(items.slice(k), x, y + th, w, h - th);
+  })(A, 0, 0, W, H);
+  let s = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(c.title)}">`;
+  out.forEach(({q, x, y, w, h}) => {
+    const col = q.other ? OTHER[theme()] : c.dim === "cat" ? colorOf(c.dim, q.k) : CAT[theme()][0], ink = lum(col) > .32 ? "#14202A" : "#fff", i = c.data.indexOf(q);
+    s += `<rect ${i >= 0 ? `data-i="${i}"` : ""} x="${x + 1}" y="${y + 1}" width="${Math.max(w - 2, 0)}" height="${Math.max(h - 2, 0)}" rx="4" fill="${col}"/>`;
+    if (w > 64 && h > 38) {
+      const mx = Math.floor((w - 16) / 7.4), nm = q.k.length > mx ? q.k.slice(0, Math.max(mx - 1, 1)) + "…" : q.k;
+      const v1 = `${fmtC(q.v)} · ${Math.round(q.v / tot * 100)}%`, v2 = fmtC(q.v), sub = v1.length * 6.8 <= w - 16 ? v1 : v2.length * 6.8 <= w - 16 ? v2 : "";
+      s += `<text x="${x + 8}" y="${y + 19}" font-size="12.5" font-weight="700" fill="${ink}" pointer-events="none">${esc(nm)}</text>` + (sub ? `<text x="${x + 8}" y="${y + 35}" font-size="12" fill="${ink}" opacity=".9" pointer-events="none">${sub}</text>` : "");
+    }
+  });
+  return s + `</svg><p class="note">Kichik bo'laklarni bosing — qiymat chiqadi.</p>`;
+}
+function vTable(c) {
+  if (c.kind === "heat") {
+    const H = [...new Set(c.data.map(x => x.h))].sort((a, b) => a - b), WD = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"];
+    const top = c.data.slice().sort((a, b) => b.v - a.v).slice(0, 10);
+    return `<table class="vt"><thead><tr><th class="l">Vaqt</th><th>O'rtacha savdo</th><th>Cheklar</th></tr></thead><tbody>${top.map(x =>
+      `<tr><td class="l">${WD[x.wd]}, ${String(x.h).padStart(2, "0")}:00</td><td>${som(x.v)}</td><td>${x.n}</td></tr>`).join("")}</tbody></table><p class="note">Eng gavjum 10 ta soat (${H.length} soat ichidan).</p>`;
+  }
+  const tot = c.data.reduce((a, x) => a + Math.max(x.v, 0), 0);
+  return `<table class="vt"><thead><tr><th class="l">${esc(c.col || "Nomi")}</th><th>${c.unit ? esc(c.unit) : "So'm"}</th><th>Ulush</th></tr></thead><tbody>${c.data.map((x, i) =>
+    `<tr data-i="${i}" class="${c.onPick ? "tap" : ""}"><td class="l">${esc(x.full || x.k)}</td><td>${som(x.v)}</td><td>${tot ? (x.v / tot * 100).toFixed(1).replace(".", ",") : 0}%</td></tr>`).join("")}</tbody></table>`;
+}
+// ---------- hafta kuni × soat
+function vHeat(c, W) {
+  const WD = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"], H = [...new Set(c.data.map(x => x.h))].sort((a, b) => a - b);
+  const h0 = H[0], h1 = H[H.length - 1], nh = h1 - h0 + 1, pl = 28, pt = 4, gap = 2, cw = (W - pl) / nh, ch = 24, max = Math.max(...c.data.map(x => x.v), 1);
+  const at = {}; c.data.forEach((x, i) => at[x.wd + "-" + x.h] = i);
+  let s = `<svg width="${W}" height="${pt + 7 * ch + 22}" viewBox="0 0 ${W} ${pt + 7 * ch + 22}" role="img" aria-label="${esc(c.title)}">`;
+  WD.forEach((wd, r) => {
+    s += `<text x="0" y="${pt + r * ch + ch / 2 + 4}" font-size="11.5" fill="var(--ink-3)">${wd}</text>`;
+    for (let hh = h0; hh <= h1; hh++) {
+      const i = at[r + "-" + hh], v = i == null ? 0 : c.data[i].v, p = v ? 10 + Math.round(90 * v / max) : 0;
+      s += `<rect ${i != null ? `data-i="${i}"` : ""} x="${pl + (hh - h0) * cw + gap / 2}" y="${pt + r * ch + gap / 2}" width="${Math.max(cw - gap, 1)}" height="${ch - gap}" rx="3" fill="${p ? "var(--s1)" : "var(--track)"}"${p ? ` fill-opacity="${(p / 100).toFixed(2)}"` : ""}/>`;
+    }
+  });
+  const ev = Math.max(1, Math.ceil(nh / Math.floor((W - pl) / 34)));
+  for (let hh = h0; hh <= h1; hh++) if ((hh - h0) % ev === 0) s += `<text x="${pl + (hh - h0 + .5) * cw}" y="${pt + 7 * ch + 15}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${String(hh).padStart(2, "0")}</text>`;
+  return s + `</svg><div class="hl"><span>kam</span><i></i><span>ko'p savdo</span></div>`;
+}
+// ---------- KPI kartochka: qiymat + oldingi davrga nisbatan + kichik trend
+function spark(vals) {
+  if (vals.length < 2) return "";
+  const W = 120, H = 28, mx = Math.max(...vals, 1), mn = Math.min(...vals), X = i => 2 + i * (W - 4) / (vals.length - 1), Y = v => 3 + (H - 6) * (1 - (v - mn) / ((mx - mn) || 1));
+  return `<svg class="spk" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><polyline points="${vals.map((v, i) => `${X(i)},${Y(v)}`).join(" ")}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${X(vals.length - 1)}" cy="${Y(vals[vals.length - 1])}" r="3.5" fill="var(--s1)" stroke="var(--card)" stroke-width="2"/></svg>`;
+}
+const PER = {1: "oldingi kunga", 7: "oldingi 7 kunga", 30: "oldingi 30 kunga"};
+function kpiD(l, v, u, cur, prev, sp) {
+  const d = prev ? cur / prev - 1 : null;
+  return `<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div><div class="d">${d == null ? "&nbsp;" :
+    `<span class="${d >= 0 ? "up" : "down"}">${d >= 0 ? "▲" : "▼"} ${Math.abs(Math.round(d * 100))}%</span> <span class="mute">${PER[S.days]}</span>`}</div>${sp || ""}</div>`;
+}
+
+function pageHome() {
+  const h = D.home, ch = h.prev_rev ? h.rev / h.prev_rev - 1 : null;
+  const pv = h.prev || {};
+  let s = `<div class="kpis">${kpiD("Tushum", mln(h.rev), "so'm", h.rev, h.prev_rev, spark(D.sales.days.map(x => x.rev)))}${kpiD("Cheklar", som(h.receipts), "ta", h.receipts, pv.receipts)}
+    ${kpiD("O'rtacha chek", som(h.avg), "so'm", h.avg, pv.avg)}${kpi("Ertaga prognoz", mln(h.fc), "so'm", `<span class="mute">${esc(D.meta.next)}</span>`)}</div>`;
+  s += `<h2 style="margin:4px 2px 8px">Bo'limlar</h2><div class="depts">` + DEPTS.map(d => {
+    const b = d.badge ? d.badge(D) : null;
+    return `<button class="dept" data-d="${d.id}"><span class="ic">${d.icon}</span><span class="nm">${esc(d.name)}</span><span class="st">${esc(d.st(D))}</span>${b ? `<span class="badge ${b[1]}">${esc(b[0])}</span>` : ""}</button>`;
+  }).join("") + D.planned.map(p => `<button class="dept off" data-d="${p.id}"><span class="ic">${p.icon}</span><span class="nm">${esc(p.name)}</span><span class="badge">Rejada</span></button>`).join("") + `</div>`;
+  if (h.alerts.length) {
+    const al = S.allAl ? h.alerts : h.alerts.slice(0, 4);
+    s += `<div class="card"><h2>⚡ E'tibor bering (${h.alerts.length})</h2>${al.map((a, i) => `<button class="al s${a.sev}" data-a="${i}"><b>${esc(a.branch)}</b><span>${esc(a.text)}</span></button>`).join("")}
+      ${h.alerts.length > 4 ? `<button class="more" id="more">${S.allAl ? "Yig'ish ▲" : "Yana " + (h.alerts.length - 4) + " ta ▼"}</button>` : ""}</div>`;
+  }
+  if (STATIC && SAT) s += `<p class="note" style="text-align:center">🔄 Ma'lumot ilovaga ${esc(SAT)} da yuklangan</p>`;
+  $("view").innerHTML = s;
+  if ($("more")) $("more").onclick = () => { S.allAl = !S.allAl; pageHome(); };
+  document.querySelectorAll("[data-d]").forEach(b => b.onclick = () => go(b.dataset.d));
+  document.querySelectorAll("[data-a]").forEach(b => b.onclick = () => { const a = h.alerts[+b.dataset.a]; S.branch = a.branch; S.page = a.dept; load(); if (TG) TG.BackButton.show(); });
+}
+function pageSales() {
+  const s = D.sales, h = D.home, pv = h.prev || {}, multi = s.days.length > 1;
+  const trend = multi ? s.days.map(d => ({k: d.label, full: `${d.wd}, ${d.label} · ${d.n} chek`, v: d.rev}))
+                      : s.hours.map(x => ({k: String(x.h).padStart(2, "0"), full: `${String(x.h).padStart(2, "0")}:00–${String(x.h + 1).padStart(2, "0")}:00`, v: x.rev}));
+  const br = D.branches.slice().sort((a, b) => b.rev - a.rev).map(b => ({k: b.branch, v: b.rev, dot: lvl(b.level),
+    full: `${b.branch} · ${b.receipts} chek` + (b.chg == null ? "" : ` · ${b.chg >= 0 ? "▲" : "▼"}${Math.abs(Math.round(b.chg * 100))}%`)}));
+  let html = `<div class="kpis">${kpiD("Tushum", mln(h.rev), "so'm", h.rev, h.prev_rev, multi ? spark(s.days.map(x => x.rev)) : "")}
+    ${kpiD("Cheklar", som(h.receipts), "ta", h.receipts, pv.receipts, multi ? spark(s.days.map(x => x.n)) : "")}
+    ${kpiD("O'rtacha chek", som(h.avg), "so'm", h.avg, pv.avg)}${kpiD("Sotilgan miqdor", som(h.qty), "dona/kg", h.qty, pv.qty)}</div>`;
+  html += viz({id: "s_trend" + (multi ? "d" : "h"), title: multi ? "Savdo dinamikasi" : "Soatlar bo'yicha savdo", sub: multi ? "Kunlik tushum, so'm" : "Kun ichida, so'm",
+    kind: "time", types: ["area", "line", "column", "table"], def: multi ? "area" : "column", data: trend, col: multi ? "Kun" : "Soat"});
+  if (s.heat && s.heat.length && S.days > 1) html += viz({id: "s_heat", title: "Qaysi kun, qaysi soatda savdo ko'p", sub: "Hafta kuni × soat — o'rtacha tushum",
+    kind: "heat", types: ["heat", "table"], def: "heat", data: s.heat.map(x => ({...x, v: x.rev, k: ""})),
+    tip: x => `<b>${som(x.v)}${NB}so'm</b>${["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"][x.wd]}, ${String(x.h).padStart(2, "0")}:00 · o'rtacha`,
+    note: "Xodim jadvali va yetkazib berishni eng to'q kataklarga moslang."});
+  html += viz({id: "s_cat", title: "Kategoriyalar", sub: "Tushumdagi ulushi", kind: "cat", types: ["donut", "bar", "tree", "column", "table"], def: "donut", dim: "cat",
+    data: s.cats.map(c => ({k: c.cat, v: c.rev})), col: "Kategoriya"});
+  html += viz({id: "s_item", title: "Top 10 mahsulot", sub: "Tushum bo'yicha", kind: "cat", types: ["bar", "tree", "column", "table"], def: "bar", dim: "item",
+    data: s.items.map(i => ({k: i.item, v: i.rev, small: i.qty + " dona", full: `${i.item} · ${i.qty} dona`})), col: "Mahsulot"});
+  if (!S.branch) html += viz({id: "s_br", title: "Filiallar", sub: "Bosing — shu filialga filtr", kind: "cat", types: ["bar", "tree", "column", "table"], def: "bar", dim: "branch",
+    data: br, col: "Filial", onPick: x => { S.branch = x.k; load(); }});
+  $("view").innerHTML = html; mountViz();
+}
+function pageBranches() {
+  const list = D.branches.slice().sort((a, b) => b.sev - a.sev || b.rev - a.rev);
+  $("view").innerHTML = list.map((b, i) => `<div class="br"><div class="h"><b><span class="dot ${lvl(b.level)}"></span>${esc(b.branch)}</b><span><b>${mln(b.rev)}</b> ${pc(b.chg)}</span></div>
+    <div class="m">${b.receipts} chek · o'rtacha ${som(b.avg)} · tarmoqning ${Math.round(b.share * 100)}% · ertaga ≈ ${mln(b.fc)}${b.kassa_n ? ` · 🕵️ ${b.kassa_n} holat` : ""}</div>
+    ${b.lines.map(t => `<div class="ln">${esc(t)}</div>`).join("") || `<div class="ln">✅ Jiddiy muammo yo'q</div>`}
+    ${S.branch ? "" : `<button class="act" data-b="${i}">Faqat shu filial →</button>`}</div>`).join("") || `<p class="empty">Ma'lumot yo'q</p>`;
+  document.querySelectorAll("[data-b]").forEach(x => x.onclick = () => { S.branch = list[+x.dataset.b].branch; S.page = "sales"; load(); });
+}
+function pageKassa() {
+  const k = D.kassa;
+  let s = `<div class="tabs"><button data-t="0" aria-selected="${S.tab === 0}">🕵️ Shubhali cheklar (${k.events.length})</button><button data-t="1" aria-selected="${S.tab === 1}">⏸ Chek urilmagan (${k.silences.length})</button></div>`;
+  if (S.tab === 0) {
+    if (!S.branch && k.summary.length) s += viz({id: "k_sum", title: "Filiallar (eng xavflisidan)", sub: `Shubhali cheklar summasi · 🟢 toza: ${k.clean} ta filial`, kind: "cat",
+      types: ["bar", "tree", "table"], def: "bar", dim: "branch", col: "Filial",
+      data: k.summary.map(r => ({k: r.branch, v: r.sum, dot: lvl(r.level), small: r.n + " holat · " + Math.round(r.share * 100) + "%", full: `${r.branch} · ${r.n} holat · tushumning ${Math.round(r.share * 100)}%`})),
+      onPick: x => { S.branch = x.k; load(); }});
+    const ev = S.branch ? k.events : k.events.slice(0, 15);
+    s += `<div class="card"><h2>${S.branch ? "Barcha holatlar" : "Eng katta 15 ta holat"}</h2>${ev.map(e => `<div class="ev">${esc(e.text)}</div>`).join("") || `<p class="empty">Shubhali holat yo'q ✅</p>`}
+      <p class="note">Bu shubha, isbot emas: o'sha vaqtdagi kamera yozuvi bilan solishtiring.</p></div>`;
+  } else {
+    const sl = S.branch ? k.silences : k.silences.slice(0, 20);
+    s += `<div class="card"><h2>60+ daqiqa chek urilmagan vaqtlar</h2>${sl.map(e => `<div class="ev ${e.big ? "" : "y"}"><b>${esc(e.day)}</b> — ${esc(e.text)}</div>`).join("") || `<p class="empty">Bunday holat yo'q ✅</p>`}</div>`;
+  }
+  $("view").innerHTML = s; mountViz();
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => { S.tab = +b.dataset.t; pageKassa(); });
+}
+function pageSupply() {
+  const sp = D.supply;
+  let s = `<div class="fc">📦 <b>${esc(sp.next)}</b> uchun kerakli miqdor: so'nggi 7 kunlik o'rtacha × shu hafta kunining odatdagi ta'siri.</div>`;
+  if (!S.branch) s += `<div class="card"><h2>Tarmoq bo'yicha (top 10)</h2><table><thead><tr><th class="l">Mahsulot</th><th>Kuniga</th><th>Ertaga</th></tr></thead><tbody>${sp.net.map(r => `<tr><td class="l">${esc(r.item)}</td><td>${r.per_day}</td><td><b>${r.tomorrow}</b></td></tr>`).join("")}</tbody></table></div>`;
+  s += `<h2 style="margin:6px 2px 8px">Filiallar bo'yicha</h2>` + sp.branches.map(b => `<details${S.branch ? " open" : ""}><summary>${esc(b.branch)} <span class="mute" style="font-weight:500">· ertaga ${b.idx > 1.05 ? "odatdagidan ko'p" : b.idx < .95 ? "odatdagidan kam" : "odatdagidek"} (${b.idx}×)</span></summary><div class="in">
+    <table><thead><tr><th class="l">Mahsulot</th><th>Kuniga</th><th>Ertaga</th></tr></thead><tbody>${b.items.map(r => `<tr><td class="l">${esc(r.item)}</td><td>${r.per_day}</td><td><b>${r.tomorrow}</b></td></tr>`).join("")}</tbody></table></div></details>`).join("");
+  $("view").innerHTML = s + `<p class="note">Miqdor 1C'dagi birlikda (dona yoki kg). Bayram va aksiyalar hisobga olinmagan.</p>`;
+}
+function pageFinance() {
+  const f = D.finance;
+  let s = `<div class="kpis">${kpi("Tushum", mln(f.rev), "so'm")}${kpi("Qaytarishlar", mln(-f.returns), "so'm")}</div>`;
+  if (f.no_cost_own > .3) s += `<div class="warn">⚠️ O'z mahsulotimiz tushumining ${Math.round(f.no_cost_own * 100)}% i uchun 1C'da tannarx kiritilmagan — foyda faqat tannarxi bor ${Math.round(f.costed_share * 100)}% qism bo'yicha hisoblandi.</div>`;
+  s += `<div class="card"><h2>Kategoriyalar: ulush va marja</h2><table><thead><tr><th class="l">Kategoriya</th><th>Tushum</th><th>Ulush</th><th>Marja</th></tr></thead><tbody>${f.cats.map(c => `<tr><td class="l">${esc(c.cat)}</td><td>${mln(c.rev)}</td><td>${Math.round(c.share * 100)}%</td><td>${c.margin == null ? "—" : `<b>${Math.round(c.margin * 100)}%</b>`}</td></tr>`).join("")}</tbody></table>
+    <p class="note">Marja = (tushum − tannarx) / tushum, faqat tannarxi to'g'ri kiritilgan sotuvlar bo'yicha. Tannarx xatolari: ${f.issues} ta.</p></div>`;
+  $("view").innerHTML = s;
+}
+function pageAnalytics() {
+  const n = D.analytics.net, T = {trend: "📈 Savdo va prognoz", kpi: "🧾 Mijoz soni va o'rtacha chek", branch: "🏪 Filiallar", cat: "🥩 Kategoriyalar", item: "🔝 Mahsulotlar", log: "🕵️ Kassa"};
+  const fc = (n.trend || []).filter(t => t.startsWith("🔮"));
+  $("view").innerHTML = (fc.length ? `<div class="fc">${fc.map(t => `<div>${esc(t)}</div>`).join("")}</div>` : "") + Object.keys(T).filter(k => (n[k] || []).length).map(k =>
+    `<div class="card"><h2>${T[k]}</h2>${n[k].filter(t => !t.startsWith("🔮")).map(t => `<div class="ln" style="margin:0 0 6px">• ${esc(t)}</div>`).join("")}</div>`).join("")
+    + `<p class="note">Prognoz: so'nggi 7 kun o'rtachasi × hafta kuni koeffitsienti. Ma'lumot ko'paygani sari aniqlashadi.</p>`;
+}
+function pageAI() {
+  const qs = ["Kecha qaysi filial eng ko'p sotdi?", "Qaysi filialda kassa muammosi ko'p?", "Ertaga qancha savdo kutilyapti?", "Marinad ulushi qaysi filialda past?"];
+  $("view").innerHTML = `<div class="chat" id="chat">${S.chat.map(m => `<div class="msg ${m.me ? "me" : "ai"}">${esc(m.t)}</div>`).join("") || `<div class="msg ai">Salom! Savdo, filiallar, kassa yoki prognoz bo'yicha savol bering — ma'lumotdan aniq raqam bilan javob beraman.</div>`}</div>
+    ${S.chat.length ? "" : `<div class="qs">${qs.map(q => `<button>${esc(q)}</button>`).join("")}</div>`}
+    <form class="ask" id="ask"><input id="q" placeholder="Savolingiz..." autocomplete="off" maxlength="500"><button>Yuborish</button></form>`;
+  document.querySelectorAll(".qs button").forEach(b => b.onclick = () => send(b.textContent));
+  $("ask").onsubmit = e => { e.preventDefault(); send($("q").value); };
+}
+async function send(q) {
+  q = (q || "").trim(); if (!q) return;
+  S.chat.push({me: 1, t: q}, {t: "⏳ O'ylayapman..."}); pageAI(); window.scrollTo(0, document.body.scrollHeight);
+  try { const r = await api("/api/ask", {q}); S.chat[S.chat.length - 1] = {t: r.answer}; }
+  catch (e) { S.chat[S.chat.length - 1] = {t: "⚠️ " + e.message}; }
+  pageAI(); window.scrollTo(0, document.body.scrollHeight);
+}
+let DASH = null;   // bir marta yuklangan dashboard (blob manzil)
+async function pageDash() {
+  const v = $("view");
+  const show = () => {
+    v.innerHTML = `<iframe id="dash" src="${DASH}" title="Dashboard" scrolling="no" style="display:block;width:100%;height:80vh;border:0;border-radius:12px;background:var(--bg)"></iframe>`;
+    const f = $("dash");
+    f.onload = () => {   // iframe bo'yi = ichidagi sahifa bo'yi: bitta oddiy aylantirish, telefonni yotqizganda ham
+      const d = f.contentDocument; if (!d) return;
+      const fit = () => { f.style.height = (d.body.scrollHeight + 4) + "px"; };
+      fit(); new ResizeObserver(fit).observe(d.body);
+    };
+  };
+  try { localStorage.setItem("savdoTheme", document.documentElement.dataset.theme === "dark" ? "dark" : "light"); } catch (e) {}
+  if (DASH) return show();
+  v.innerHTML = `<div class="load"><div class="spin"></div>Dashboard tayyorlanmoqda...<br><small>Birinchi marta 10–60 soniya</small></div>`;
+  try {
+    if (STATIC) DASH = URL.createObjectURL(new Blob([await sDec(await sFetch("d/dash.bin"))], {type: "text/html"}));
+    else {
+      const r = await fetch("/api/dashboard", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({initData: INIT})});
+      if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.error || ("Xato " + r.status)); }
+      DASH = URL.createObjectURL(await r.blob());
+    }
+    if (S.page === "dash") show();
+  } catch (e) { v.innerHTML = `<div class="card empty">⚠️ ${esc(e.message)}</div>`; }
+}
+function pagePlanned() {
+  const p = D.planned.find(x => x.id === S.page);
+  $("view").innerHTML = `<div class="card"><h2>${p.icon} ${esc(p.name)} — rejada</h2><p>${esc(p.note)}</p><p class="note">Ma'lumot manbai ulanganda bu bo'lim avtomatik ishga tushadi.</p></div>`;
+}
+function render() {
+  if (!D) return;
+  header();
+  if (D.empty) { $("view").innerHTML = `<div class="card empty">Bu tanlov bo'yicha savdo yo'q. Davr yoki filialni o'zgartiring.</div>`; return; }
+  if ((D.planned || []).some(p => p.id === S.page)) return pagePlanned();
+  ({home: pageHome, sales: pageSales, branches: pageBranches, kassa: pageKassa, supply: pageSupply, finance: pageFinance,
+    analytics: pageAnalytics, ai: pageAI, dash: pageDash}[S.page] || pagePlanned)();
+}
+document.querySelectorAll("[data-days]").forEach(b => b.onclick = () => { S.days = +b.dataset.days; load(); });
+$("branch").onchange = e => { S.branch = e.target.value; load(); };
+$("back").onclick = () => go("home");
+prefLoad().then(STATIC ? sBoot : load);
+</script>
+</body>
+</html>
